@@ -6,6 +6,7 @@ import io.ConsolePrinter;
 import io.DataReader;
 import model.Computer;
 import model.Player;
+import model.Stats;
 
 public class GameController {
 	DataReader dataReader = new DataReader();
@@ -15,6 +16,9 @@ public class GameController {
 	private Computer computer;
 	private Choices playerChoice;
 	private Choices computerChoice;
+	private static int ties = 0;
+	private static int loses = 0;
+	private static int wins = 0;
 	
 	public GameController() {
 		gameStatus = GameStatus.GAME_IN_PROGRESS;
@@ -24,7 +28,6 @@ public class GameController {
 
 	public void mainLoop() {
 		char value = ' ';
-
 		while (value != 'N') {
 			play();
 			printer.printLine("Do you want to play again? Press any key to continue, or 'N' to quit");
@@ -38,10 +41,25 @@ public class GameController {
 		playerChoice = player.getChoice();
 		computerChoice = computer.getChoice();
 		gameStatus = updateStatus();
+		updateStats();
 		displayResult();
 	}
 
+	private void updateStats() {
+		if(gameStatus == GameStatus.WIN) {
+			wins++;
+		} else if(gameStatus == GameStatus.TIE) {
+			ties++;
+		} else if(gameStatus == GameStatus.LOSE) {
+			loses++;
+		}
+	}
+
 	private void displayResult() {
+		
+		printer.printLine("Player: " + playerChoice);
+		printer.printLine("Computer: " + computerChoice);
+		
 		switch(gameStatus) {
 		case WIN:
 			printer.printLine(playerChoice + " beats " + computerChoice + ". Player WINS");
@@ -56,6 +74,10 @@ public class GameController {
 			printer.printLine("something went wrong");
 			break;
 		}
+		printer.printLine("You've played " + (wins + ties + loses) + " games");
+		printer.printLine("WINS: " + wins);
+		printer.printLine("TIES: " + ties);
+		printer.printLine("LOSES: " + loses);
 	}
 
 	private GameStatus updateStatus() {
