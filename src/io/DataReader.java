@@ -7,6 +7,10 @@ public class DataReader {
 
 	public char readCharacter() {
 		String value = scanner.nextLine();
+		
+		if(value.length() == 0) {
+			return ' ';
+		}
 		return value.toUpperCase().charAt(0);
 	}
 }
