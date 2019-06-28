@@ -3,14 +3,13 @@ package io;
 import java.util.Scanner;
 
 public class DataReader {
-	private Scanner scanner = new Scanner(System.in);
+	private Scanner input = new Scanner(System.in);
 
 	public char readCharacter() {
-		String value = scanner.nextLine();
-		
-		if(value.length() == 0) {
+		String character = input.nextLine();
+		if (character.length() == 0) {
 			return ' ';
 		}
-		return value.toUpperCase().charAt(0);
+		return character.toUpperCase().charAt(0);
 	}
 }

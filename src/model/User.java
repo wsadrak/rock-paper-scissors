@@ -4,14 +4,15 @@ import enums.Choices;
 import io.ConsolePrinter;
 import io.DataReader;
 
-public class Player {
+public class User implements Player {
 	private ConsolePrinter printer = new ConsolePrinter();
 	private DataReader dataReader = new DataReader();
+	
+	@Override
 	public Choices getChoice() {
 	
 		printer.printLine("Please enter your choice: R=ROCK, P=PAPER, S=SCISSORS");
 		char playerChoice = dataReader.readCharacter();
-		
 	
 		switch(playerChoice) {
 		case 'R':
@@ -24,5 +25,7 @@ public class Player {
 		printer.printLine("Invalid input!");
 		return getChoice();
 	}
+
+	
 
 }

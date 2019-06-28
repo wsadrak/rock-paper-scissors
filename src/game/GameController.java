@@ -1,100 +1,66 @@
-package app;
+package game;
 
-import enums.Choices;
 import enums.GameStatus;
 import io.ConsolePrinter;
 import io.DataReader;
-import model.Computer;
-import model.Player;
-import model.Stats;
 
 public class GameController {
-	DataReader dataReader = new DataReader();
-	ConsolePrinter printer = new ConsolePrinter();
-	private GameStatus gameStatus;
-	private Player player;
-	private Computer computer;
-	private Choices playerChoice;
-	private Choices computerChoice;
-	private static int ties = 0;
-	private static int loses = 0;
-	private static int wins = 0;
+	private GameStatus gameStatus = GameStatus.GAME_IN_PROGRESS;
+	private Statistics statistics = new Statistics();
+	private Game game = new Game();
+
 	
-	public GameController() {
-		gameStatus = GameStatus.GAME_IN_PROGRESS;
-		player = new Player();
-		computer = new Computer();
-	}
-
 	public void mainLoop() {
-		char value = ' ';
-		while (value != 'N') {
-			play();
-			printer.printLine("Do you want to play again? Press any key to continue, or 'N' to quit");
-			value = dataReader.readCharacter();
-		}
-		printer.printLine("bye");
-
+		boolean isNextRound = true;
+		do {
+			playSingleRound();
+			isNextRound = validateNextRound();
+		} while (isNextRound);
 	}
 
-	private void play() {
-		playerChoice = player.getChoice();
-		computerChoice = computer.getChoice();
+	private boolean validateNextRound() {
+		DataReader dataReader = new DataReader();
+		ConsolePrinter printer = new ConsolePrinter();
+		printer.printLine("Do you want to play again? Press 'Y' to continue, or any key to quit");
+		if (dataReader.readCharacter() == 'Y') {
+			return true;
+		}
+		return false;
+	}
+
+	private void playSingleRound() {
+		doPlayersMoves();
+		updateGame();
+		displayInfo();
+	}
+
+	private void doPlayersMoves() {
+		game.getPlayersChoices();
+	}
+
+	private void updateGame() {
 		gameStatus = updateStatus();
-		updateStats();
-		displayResult();
-	}
-
-	private void updateStats() {
-		if(gameStatus == GameStatus.WIN) {
-			wins++;
-		} else if(gameStatus == GameStatus.TIE) {
-			ties++;
-		} else if(gameStatus == GameStatus.LOSE) {
-			loses++;
-		}
-	}
-
-	private void displayResult() {
-		
-		printer.printLine("Player: " + playerChoice);
-		printer.printLine("Computer: " + computerChoice);
-		
-		switch(gameStatus) {
-		case WIN:
-			printer.printLine(playerChoice + " beats " + computerChoice + ". Player WINS");
-			break;
-		case LOSE:
-			printer.printLine(playerChoice + " lose to " + computerChoice + ". Computer WINS");
-			break;
-		case TIE:
-			printer.printLine(playerChoice + " equals to " + computerChoice + ". It's TIE");
-			break;
-		case GAME_IN_PROGRESS:
-			printer.printLine("something went wrong");
-			break;
-		}
-		printer.printLine("You've played " + (wins + ties + loses) + " games");
-		printer.printLine("WINS: " + wins);
-		printer.printLine("TIES: " + ties);
-		printer.printLine("LOSES: " + loses);
+		updateStatistics();
 	}
 
 	private GameStatus updateStatus() {
-		if(playerChoice == computerChoice) {
-			return GameStatus.TIE;
-		}
-		
-		switch(playerChoice) {
-		case ROCK:
-			return (computerChoice == Choices.SCISSORS ? GameStatus.WIN : GameStatus.LOSE);
-		case PAPER:
-			return (computerChoice == Choices.ROCK ? GameStatus.WIN : GameStatus.LOSE);
-		case SCISSORS:
-			return (computerChoice == Choices.PAPER ? GameStatus.WIN : GameStatus.LOSE);
-		}
-		
-		return null;
+		return game.updateStatus();
 	}
 
+	private void updateStatistics() {
+		statistics.update(gameStatus);
+	}
+
+	private void displayInfo() {
+		displayResult();
+		displayStatistics();
+	}
+
+	private void displayStatistics() {
+		statistics.printStats();
+	}
+
+	private void displayResult() {
+		game.displayResult(gameStatus);
+	}
 }

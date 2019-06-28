@@ -1,6 +1,5 @@
 package enums;
 
 public enum GameStatus {
-	GAME_IN_PROGRESS, WIN, LOSE, TIE;
-
+	WIN, LOSE, TIE, GAME_IN_PROGRESS;
 }
